@@ -1,0 +1,157 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{graphicx}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section] % reset theorem numbering for each section
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition} % definition numbers are dependent on theorem numbers
+\newtheorem{lemm}[thm]{Lemma} % same for lemma numbers
+\newtheorem{conj}[thm]{Conjecture} % same for conjecture numbers
+\newtheorem{obs}[thm]{Observation} % same for observation numbers
+\newtheorem{exmp}[thm]{Example} % same for example numbers
+
+\newtheoremstyle{named}{}{}{\itshape}{}{\bfseries}{.}{.5em}{\thmnote{#3's }#1}
+\theoremstyle{named}
+\newtheorem*{namedtheorem}{Theorem}
+
+% \renewcommand\qedsymbol{$\blacksquare$}
+\renewcommand\qedsymbol{QED}
+
+\begin{document}
+
+%opening
+\title{FFM Cryptosystem - Finite Field Matrix Cryptosystem - a public-key cryptosystem with encryption and signature schemes based on the hardness of finite field polynomial factorization}
+\author{Yuri S Villas Boas}
+
+\maketitle
+
+\begin{abstract}
+We introduce a cryptosystem based on the difficulty of factorizing polynomials over finite fields. Public key is given by a full-rank Matrix over this field, and private key by its eigenvector decomposition. Cryptosystem allows for encryption and signature schemes, which are covered in the document, as well as preliminary cryptanalysis.\\
+
+\textbf{keywords:} finite field polynomial factorization, linear algebra over finite field, characteristic polynomial, eigenvector decomposition, public-key cryptosystem, encryption scheme, signature scheme, cryptanalysis.
+\end{abstract}
+
+\section{Algebra}
+
+Our proposed cryptosystem can be defined by the table below:
+\begin{flushleft}
+ \begin{tabular}{|r|c|l|}
+    \hline
+    \textbf{Component} & \textbf{Formula} & \textbf{Definition}\\
+    \hline
+     \textbf{Private Key} & $(R, A, R^{-1})$ & $R = \left(\mathbf{r_1}, \cdots, \mathbf{r_n}\right)$ full-rank, with $n \geq 4$, even\\
+     &  & $A = \left(a_1\mathbf{e_1}, \cdots, a_n\mathbf{e_n} \right)$, with $B\mathbf{r_i} = a_i\mathbf{r_i} \neq \mathbf{0}$\\
+     \hline
+     \textbf{Public Key} & $B$ & $B = RAR^{-1}$\\
+     \hline
+        \textbf{Plaintext} & $P$ & $P\in \mathbb{F}/p^{n\times n}$ an ordered basis over $\mathbb{F}/p^n$\\
+     \hline
+    \textbf{Ciphertext} & $C$ & $C = PBP^{-1}$\\
+     \hline
+    \textbf{Decription} & $VR^{-1}$ & $V = \left(\mathbf{v_1}, \cdots, \mathbf{v_n}\right)$, where $\left(C-\mathbf{r_i}I\right)\mathbf{v_i} = \mathbf{0}$\\
+     \hline
+    \textbf{Document} & $d$ & $d \in \mathbb{F}/p$\\
+     \hline
+    \textbf{Signature} & $s$ & $s = \Pi_{i = 1}^{n/2} (x-a_{\pi(i)}^d) \in \mathbb{F}_p[x]$, where $\pi(\cdot) \in S_n$\\
+     \hline
+    \textbf{Verification} & $s | b_d$ & $b = det\left(B^d-xI\right) \in \mathbb{F}_p[x]$\\
+    \hline
+    \multicolumn{3}{c}{}
+\label{tab:notation}
+\end{tabular}
+\end{flushleft}
+where,
+
+\begin{flushleft}
+\begin{tabular}{c l}
+    $\mathbb{F}_p$ & refers to the finite field of order $p$;\\
+    $\mathbb{F}_p[x]$ & refers to the set of polynomials over $\mathbb{F}_p$;\\
+    $\left(\mathbf{m_1},\cdots,\mathbf{m_n}\right)$ & signifies a matrix having $\mathbf{m_i}$ as its $i$th column vector;\\
+    $\mathbf{e_i}$ & refers to the $i$th canonical vector of $\mathbb{F}_p$;\\
+    $p|q$ & means $p$ divides $q$;\\
+    $S_n$ & is the symmetric group of $n$ elements;\\
+\end{tabular}
+\end{flushleft}
+
+\section{Computability}
+
+Throughout this session we will analyse the \textbf{polynomial-reducibility} of objects defined in the previous session. Here, public information ($B$, $C$, $s$, $d$) is, in fact, known, that is, available to the algorithms.
+
+\begin{defn}
+We define\footnote{`$p$' in $\leq_p$ stands for \textit{polynomial time}, while `$p$' in $\mathbb{F}_p$ is an incognate \textit{prime} number. Those are two totally different concepts and they sharing the same letter is just a notation coincidence.} the \textbf{non-strict preorder} $a \leq_p b$ as: \textit{``b is polynomially reducible to a.''} namely \textit{``There exists a polynomial-time complexity algorithm to compute $b$ from $a$.''} That definition ensues the following \textbf{strict preorder} $a <_p b$ given by $a \leq_p b \land a \ngeq_p b$, and the \textbf{equivalence relation} $a \equiv_p b$ given by $a \leq_p b \land a \geq_p b$.
+\end{defn}
+
+For the nnnn statements below, consider $f(x) \in \mathbb{Z}_p[x]$, given by $f(x) = \Pi_{i = 1}^{n}(x-a_i)$.
+
+\begin{conj}
+\label{conj:polyfacthard}
+$f(x) \nleq_p (a_1, \cdots, a_n)$
+\end{conj}
+
+\begin{conj}
+\label{conj:polyfacthard}
+For $f(x) \in \mathbb{Z}_p[x]$, given by $f(x) = \Pi_{i = 1}^{n}(x-a_i)$, with $n \geq 2$, $(a_1, \cdots, a_n) \leq_p f(x)$.
+\end{conj}
+
+\begin{proof}
+More precisely, we will 
+\begin{description}
+\item [$(\leq_p)$:] Just perform the multiplications of the $n$ binomials $(x-a_i)$, totaling $\mathcal{O}(n^2)$ multiplications in $\mathbb{F}_p$.
+\item [$(\ngeq_p)$:] Conjectured hardness of polynomial factorization.
+\end{description}
+\end{proof}
+
+\begin{lemm}
+$R \equiv_p A$
+\end{lemm}
+
+\begin{proof}
+linear systems:
+\begin{description}
+ \item [$(\leq_p)$:] Have $a_i \coloneqq (\mathbf{e_{j(i)}}^TB\mathbf{r_i})*(\mathbf{e_{j(i)}}^T\mathbf{r_i})^{-1}$, for each $i$ and any $j(\cdot)$ for which $\mathbf{e_{j(i)}}^T\mathbf{r_i} \neq 0$ --- which is guaranteed to exist by $R$ being full-rank. Namely, use the definition of eigenvectors to calculate each eigenvalues by taking one non-zero entry of $B\mathbf{r_i}$ and finding the `ratio' of it to the same (non-null) entry of $\mathbf{r_i}$ (meaning, multiply the former by the later's multiplicative inverse in $\mathbb{F}_p$).
+ \item [$(\geq_p)$:] For each $1 \leq i \leq n$, solve $(B-a_iI)\mathbf{x}=\mathbf{0}$ on $\mathbf{x_i}$ to find $\mathbf{r_i}$ except by a constant scalar factor. Cancel that factor after assertaining it, likewise in the previous step, from the `ratio' of any non-null entry of $\mathbf{e_i}^TB$ and the correspondent (non-null) entry of $\mathbf{x_i}$.
+\end{description}
+\end{proof}
+
+\begin{conj}
+\label{conj:prentry01p}
+Probability of fortuitous ocurrence of any entry whatsoever equal $0$ is polynomially bounded by $1/p$.
+\end{conj}
+
+Intuitively, it seems to be the case that assuming the random elicitation of the private key is, in fact, uniform, and that the hashing algorithm of documents is ideal, and that the specification of vectors of the eigenspace for the plaintext is uniformly random, and that the plaintext itself is uniforrmly random\footnote{That is actually very plausible seeing that public key encryption schemes typically are used to encrypt symmetric session keys represented by arrays of random bits.}, the probabilty of any given entry of the \textbf{public key}, a \textbf{signature} and a \textbf{ciphertext} being $0$ is bounded to a power of $1/p$ per instance of usage. Anecdotal observations suggest that such fortuitous occurrences $0$'s for realistic values of $p$ are, in fact, negligible.
+
+\begin{obs}
+One relevant implication of conjecture \ref{conj:prentry01p} being true, the treatment such possibility is just a matter of formal mathematical correctness, and implementations of this algorithms could be made to simply ignore them, as merely contemplating them could cost more than blindly taking the risk run-time failure, however catastrophic the consequences.
+\end{obs}
+
+\begin{obs}
+Another relevant implication conjecture \ref{conj:prentry01p} being true is that it to be the case that the difficulty hazardly yielding a $0$ entry as described above could be used as a cryptographic scheme of some sort.
+\end{obs}
+
+% \begin{obs}
+% hard to formalize, but `It's unlikely that two ratios between non-zero entrie would coincide by happenschance (presumed proability of 1/(p-1), so the cryptanalytic process of assessing if a candidate to eigenvector is in fact eigenvector, should verify the coincidence of two such ratios, therefore economizing the verification of other entries.
+% \end{obs}
+
+\begin{obs}
+ 
+\end{obs}
+
+
+\section{Complexity}
+
+\section{Cryptanalysis}
+
+\end{document}
