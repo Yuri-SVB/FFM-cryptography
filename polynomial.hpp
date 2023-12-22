@@ -128,7 +128,7 @@ public:
 			}
 		}
 
-		return quocient;
+		return ModPolynomial<T, DPO>(quocient);
 	}
 
 	
